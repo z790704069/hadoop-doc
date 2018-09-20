@@ -22,8 +22,9 @@ HDFS被设计成易于从一个平台移植到另一个平台。这有助于HDFS
 
 # Namenode和DataNodes
 HDFS有一个主从架构。一个HDFS集群包含一个Namenode,Namenode管理文件系统的命名空间以及调整客户端对文件的访问。此外，还有一定数量的Datanode,集群中通常一个节点一个Datanode，用来管理其运行节点上的存储。HDFS公开文件系统命名空间，并允许用户数据存储在文件中。集群内部，一个文件被分成一个或多个blocks并且这些blocks存储在一些Datanode中。Namenode执行文件系统命名空间操作，例如打开、关闭、重命名文件和文件夹。Namenode还决定blocks到Datanode的映射。Datanode负责服务于系统客户端的读和写。DataNode还根据NameNode的指令执行块创建，删除和复制。
-![IMAGE](quiver-image-url/077C4377C67276A5BEA581807A80F3FD.jpg =874x604)
+![][2]
 
 [1]: http://hadoop.apache.org/
+[2]: http://hadoop.apache.org/docs/stable/hadoop-project-dist/hadoop-hdfs/images/hdfsarchitecture.png
 
 

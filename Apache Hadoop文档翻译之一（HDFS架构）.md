@@ -39,6 +39,13 @@ HDFS被设计用来可靠地在集群中大量机器上存储大文件。它以�
 有关块的复制，NameNode全权负责。Namenode定期接收集群中Datanode的心跳和块信息报告。接收到心跳表明Datanode正常工作。块信息报告（Blockreport）包含DataNode上所有块的列表。
 ![][6]
 
+## 副本选址
+副本的选址对HDFS的可靠性和性能起到至关重要的作用。优化副本的选址使HDFS区别于其他分布式文件系统。这是一个需要大量调试和经验的特性。机架感知式的选址策略的目标是为了提供数据可靠性、可用性以及带宽利用率。目前的副本选址策略的实现是在这个方向上的第一次努力。实现这个策略的短期目标是在生产系统中进行验证，掌握更多行为并建立一个基础来测试和研究更加复杂的策略。
+HDFS运行在一系列的集群主机上，这些主机通常分布在各个机架上。跨机架上的两个不同主机间信息交换需要经过交换机。在大多数情况下，同一机架中的计算机之间的网络带宽大于不同机架中的计算机之间的网络带宽。Namenode通过[Hadoop Rack Awareness][7] 过程来决定每个Datanode隶属于哪个机架id。一个简单但是非最佳的策略是将副本放在不同机架上。这样，当一整个机架出现故障时能够防止数据丢失，并且读取数据能使用到不同机架上的带宽。但是，这种策略增加了写操作代价，因为需要传输块到不同机架上。当副本数为3时，HDFS放置策略通常是将一个副本放在本机架的一个节点上，将另一个副本放在本机架的另一个节点，最后一个副本放在不同机架的不同节点上。该策略可以减少机架之间写入流量，从而提高写入性能。机架出现故障的概率要比机器出现故障的概率低，这个策略不会影响数据可靠性和可用性的保证。但这种策略会降低数据读取时的网络带宽，因为数据只放置在两个机架上而不是三个。这种策略下，文件的副本不是均匀的分布在各个机架上。三分一个的副本放置在一个节点上，三分之二的副本放置在一个机架上，而另外三分之一均匀分布在剩余的机架上。这个策略提高了写性能而不影响数据可靠性和读性能。
+当前，这里介绍的默认副本放置策略是一项正在进行的工作。
+
+## 副本选择
+
 
 
 
@@ -48,5 +55,6 @@ HDFS被设计用来可靠地在集群中大量机器上存储大文件。它以�
 [4]: http://hadoop.apache.org/docs/stable/hadoop-project-dist/hadoop-hdfs/HdfsQuotaAdminGuide.html
 [5]: http://hadoop.apache.org/docs/stable/hadoop-project-dist/hadoop-hdfs/HdfsPermissionsGuide.html
 [6]: http://hadoop.apache.org/docs/stable/hadoop-project-dist/hadoop-hdfs/images/hdfsdatanodes.png
+[7]: http://hadoop.apache.org/docs/stable/hadoop-project-dist/hadoop-common/RackAwareness.html
 
 

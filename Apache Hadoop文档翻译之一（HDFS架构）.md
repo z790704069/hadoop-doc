@@ -1,3 +1,4 @@
+![][3]
 > Apache Hadoop项目为高可用、可扩展、分布式计算开发开源软件。Apache Hadoop软件库是一个平台，它使用简单的编程模型让跨机器上大数据量的分布式计算变得简单。
 它旨在从单个服务器扩展到数千台计算机，每台计算机都提供本地计算和存储。库本身被设计用来在软件层面检测和处理故障，而不是依赖硬件来提供高可用性，因此，在计算机集群之上提供高可用性服务，每个计算机都可能容易出现故障。
 
@@ -6,7 +7,7 @@ HDFS是一个被设计用来运行在商用机器上的分布式文件系统。�
 
 # 假设和目标
 ## 硬件故障
-硬件故障很常见。一个HDFS示例应该是包含成百上千太服务器，每台服务器保存文件系统的部分数据。事实上，存在大量组件并且每个组件都有可能出现故障，这意外着有些组件可能一直无法正常工作。因此，检测故障并且自动从故障中快速恢复是HDFS的核心架构目标。
+硬件故障很常见。一个HDFS示例应该是包含成百上千太服务器，每台服务器保存文件系统的部分数据。事实上，存在大量组件并且每个组件都有可能出现故障，这意外着有些组件可能一直无法正常工作。因此，检测故障并且自动从故障中快速恢复是HDFS架构的核心目标。
 ## 流数据访问
 在HDFS上运行的程序需要对其数据集进行流式访问。它们不是运行在普通文件系统上的普通应用程序。HDFS被设计更多是作为批处理来使用，而不是用户的交互式使用。重点是数据访问的高吞吐量而不是数据访问的低延迟。POSIX强加了许多针对HDFS的应用程序不需要的硬性要求。
 ## 大数据集
@@ -21,10 +22,31 @@ HDFS程序需要一个一次写入多次读取的文件访问模型。一次创�
 HDFS被设计成易于从一个平台移植到另一个平台。这有助于HDFS的普及。
 
 # Namenode和DataNodes
-HDFS有一个主从架构。一个HDFS集群包含一个Namenode,Namenode管理文件系统的命名空间以及调整客户端对文件的访问。此外，还有一定数量的Datanode,集群中通常一个节点一个Datanode，用来管理其运行节点上的存储。HDFS公开文件系统命名空间，并允许用户数据存储在文件中。集群内部，一个文件被分成一个或多个blocks并且这些blocks存储在一些Datanode中。Namenode执行文件系统命名空间操作，例如打开、关闭、重命名文件和文件夹。Namenode还决定blocks到Datanode的映射。Datanode负责服务于系统客户端的读和写。DataNode还根据NameNode的指令执行块创建，删除和复制。
+HDFS有一个主从架构。一个HDFS集群包含一个Namenode,Namenode管理文件系统的命名空间以及调整客户端对文件的访问。此外，还有一定数量的Datanode,集群中通常一个节点一个Datanode，用来管理其运行节点上的存储。HDFS公开文件系统命名空间，并允许用户数据存储在文件中。集群内部，一个文件被分成一个或多个blocks并且这些blocks存储在一些Datanode上。Namenode执行文件系统命名空间操作，例如打开、关闭、重命名文件和文件夹。Namenode还决定blocks到Datanode的映射。Datanode负责服务于系统客户端的读和写。DataNode还根据NameNode的指令执行块创建，删除和复制。
 ![][2]
+
+Namenode和Datanode时设计用于运行在商用机器上的软件。这些机器通常运行linux操作系统。HDFS是JAVA语言编写的，所以任何支持JAVA的机器都能运行Namenode和Datanode软件。使用高度可移植的Java语言意味着HDFS可以部署在各种各样的机器上。普遍的部署方式是在一台专用机器上单独运行Namenode软件。集群中其他机器运行Datanode软件。架构支持在一台机器上运行多个Datanode,但是实际部署很少这样做。
+一个集群中只存在一个Namenode极大简化了系统的架构。Namenode管理整个HDFS的元数据。系统被设计为任何用户数据都不流经Namenode。
+
+# 文件系统命名空间
+HDFS支持传统的文件分层组织。用户或程序可以创建目录以及保存文件到目录中。HDFS文件系统命名空间层次结构跟其他现有文件系统类似：比如创建文件和删除文件，将文件从一个目录移到另一个目录，或者重命名文件。HDFS支持[用户配额][4]和[访问权限][5]。HDFS不支持硬连接或软连接，但是不排除在未来的版本中实现。
+Namenode维护文件系统的命名空间。文件系统命名空间或其属性的更改都由Namenode来记录。应用程序可以指定文件的副本数量，该文本由HDFS来维护。文件的副本数称为该文件的复制因子，该信息由NameNode存储。
+
+# 数据复制
+HDFS被设计用来可靠地在集群中大量机器上存储大文件。它以一系列块的形式保存每一个文件。文件块被复制多份以提高容错性。每个文件的块大小和复制因子是可配置的。
+一个文件除了最后一个块以外，其他块都是相同大小。当设置块长度可变时，用户可以开启一个新的块而不需要在最后的块上进行追加以达到配置的固定大小。
+应用程序可以指定文件的副本数量。复制因子在文件创建时指定并能在随后进行修改。HDFS中文件是一次性写入（除非追加和截断）并且任何时候只有一个写入者。
+有关块的复制，NameNode全权负责。Namenode定期接收集群中Datanode的心跳和块信息报告。接收到心跳表明Datanode正常工作。块信息报告（Blockreport）包含DataNode上所有块的列表。
+![][6]
+
+
+
 
 [1]: http://hadoop.apache.org/
 [2]: http://hadoop.apache.org/docs/stable/hadoop-project-dist/hadoop-hdfs/images/hdfsarchitecture.png
+[3]: http://kooola.com/upload/2018/06/vpcgv27a4ghtgrkts238n63moj.jpg
+[4]: http://hadoop.apache.org/docs/stable/hadoop-project-dist/hadoop-hdfs/HdfsQuotaAdminGuide.html
+[5]: http://hadoop.apache.org/docs/stable/hadoop-project-dist/hadoop-hdfs/HdfsPermissionsGuide.html
+[6]: http://hadoop.apache.org/docs/stable/hadoop-project-dist/hadoop-hdfs/images/hdfsdatanodes.png
 
 

@@ -96,11 +96,33 @@ HDFS被设计成支持非常大的文件。与HDFS兼容的应用程序是处理
 应用程序可以通过多种方式来访问HDFS。HDFS本身提供[FileSystem Java API][11]让应用程序来访问，这个Java Api的C语言封装版本以及REST API同样可以供用户使用。另外，一个HTTP浏览器也可以访问HDFS实例中的文件。使用[MFS gateway][12],HDFS能被安装作为本地文件系统的一部分。
 
 ## FS Shell
+HDFS提供一个称为[FS Shell][13]的命令行接口，方便用户与HDFS中的数据进行交互。这写命令集合的语法跟其他我们熟悉的命令十分相似（例如bash,csh）。下面是一些动作/命令对的示例：
+|动作|命令|
+|---|---|
+|创建目录|bin/hadoop dfs -mkdir /foodir|
+|删除目录|bin/hadoop fs -rm -R /foodir|
+|查看文件内容|bin/hadoop dfs -cat /foodir/myfile.txt|
+
 ## DFSAdmin
+DFSAdmin命令集是用来管理HDFS集群。只有HDFS管理者才能使用这些命令。下面是一些动作/命令对的示例：
+|动作|命令|
+|---|---|
+|Put the cluster in Safemode|bin/hdfs dfsadmin -safemode enter|
+|Generate a list of DataNodes|bin/hdfs dfsadmin -report|
+|Recommission or decommission DataNode(s)|bin/hdfs dfsadmin -refreshNode|
+
 ## 浏览器界面
+A typical HDFS install configures a web server to expose the HDFS namespace through a configurable TCP port. This allows a user to navigate the HDFS namespace and view the contents of its files using a web browser.
+
+通常安装HDFS时会配置一个web服务，通过一个配置好的TCP端口来暴露HDFS命名空间。它允许用户看到HDFS命名空间，并能使用web浏览器来查看文件内容。
 
 # 空间回收
+## 文件的删除和恢复
+
+
 # 参考
+Hadoop [Java API][14]
+HDFS源码: [http://hadoop.apache.org/version_control.html][15]
 
 
 
@@ -117,4 +139,7 @@ HDFS被设计成支持非常大的文件。与HDFS兼容的应用程序是处理
 [10]: http://hadoop.apache.org/docs/stable/hadoop-project-dist/hadoop-hdfs/HdfsSnapshots.html
 [11]: http://hadoop.apache.org/docs/current/api/
 [12]: http://hadoop.apache.org/docs/stable/hadoop-project-dist/hadoop-hdfs/HdfsNfsGateway.html
+[13]: http://hadoop.apache.org/docs/stable/hadoop-project-dist/hadoop-common/FileSystemShell.html
+[14]: http://hadoop.apache.org/docs/current/api/
+[15]: http://hadoop.apache.org/version_control.html
 

@@ -80,13 +80,21 @@ HDFS架构兼容数据再平衡方案。当一个Datanode上的剩余空间降�
 ## 数据完整性
 从DataNode获取的数据块可能已损坏。发生损坏的原因可能是存储设备的故障、网络故障或者缺陷软件。HDFS客户端软件对HDFS文件的内容进行校验和检查。当客户端创建一个HDFS文件，它会计算文件的每一个数据块的校验和，并将这些校验和储存在HDFS命名空间中一个单独的隐藏的文件当中。当客户端从DataNode获得数据时会对对其进行校验和，并且将之与储存在相关校验和文件中的校验和进行匹配。如果没有，客户端会选择从另一个拥有该数据块副本的DataNode上恢复数据。
 ## 元数据磁盘故障
+FsImage和EditLog是HDFS的核心数据架构。这些文件的故障会导致HDFS实例无法工作。因为这个原因，HDFS可以被配置成支持多份FsImage和EditLog备份。任何对FsImage和EditLog的更新，都会导致其他所有FsImage和EditLog的同步更新。同步更新多份FsImge和EditLog降低NameNode能支持的每秒更新命名空间事务的频率。然而，频率的降低是可以被接受，尽管HDFS应用本质上是对数据敏感，但不是对元数据敏感。当一个NameNode重新启动，他会选择最新的FsImage和EditLog来使用。另一个增加容错性已达到高可用性的选项是使用多个Namenodes，这个选项的具体实现可以为：[文件系统的共享存储][8]、[分布式的编辑日志][9]（称为Journal）。后面会介绍使用方法。
+
 ## 快照
+[快照][10]支持在特定的时间（瞬间）保存数据的副本。我们使用的快照特征可能是将损坏的HDFS实例回退到先前一个正常版本。
 
 # Data Organization
 ## 数据块
+HDFS被设计成支持非常大的文件。与HDFS兼容的应用程序是处理大型数据集的应用程序。这些程序一次写入数据多次读取，并且这些读操作满足流式的速度。HDFS支持一次写入多次读取的文件语义。HDFS中，一个典型的块大小是128兆。因此，一个HDFS文件会被切割成128M大小的块，如果可以的话，每一个大块都会分属于一个不同的DatNode。
+
 ## 复制流水线
+当客户端按照3个副本数来写数据到HDFS文件中，Namenode使用副本目标选择算法来获取Datanode列表。这个列表包含块副本将落地的Datanode。然后客户端将数据写入第一个Datanode。第一个Datanode开始分部分接收数据，将每个部分写入其本地存储，并将该部分传输到列表中的第二个Datanode。第二个Datanode开始接收数据块的每个部分并写入本地存储然后传输到第三个Datanode。最后，第三个Datanode将数据写入本地存储。因此，一个Dataode能够从上一个节点接收数据据并在同一时间将数据转发给下一个节点。因此，数据在管道中从一个DataNode传输到下一个（复制流水线）。
 
 # 可访问性
+应用程序可以通过多种方式来访问HDFS。HDFS本身提供[FileSystem Java API][11]让应用程序来访问，这个Java Api的C语言封装版本以及REST API同样可以供用户使用。另外，一个HTTP浏览器也可以访问HDFS实例中的文件。使用[MFS gateway][12],HDFS能被安装作为本地文件系统的一部分。
+
 ## FS Shell
 ## DFSAdmin
 ## 浏览器界面
@@ -104,5 +112,9 @@ HDFS架构兼容数据再平衡方案。当一个Datanode上的剩余空间降�
 [5]: http://hadoop.apache.org/docs/stable/hadoop-project-dist/hadoop-hdfs/HdfsPermissionsGuide.html
 [6]: http://hadoop.apache.org/docs/stable/hadoop-project-dist/hadoop-hdfs/images/hdfsdatanodes.png
 [7]: http://hadoop.apache.org/docs/stable/hadoop-project-dist/hadoop-common/RackAwareness.html
-
+[8]: http://hadoop.apache.org/docs/stable/hadoop-project-dist/hadoop-hdfs/HDFSHighAvailabilityWithNFS.html
+[9]: http://hadoop.apache.org/docs/stable/hadoop-project-dist/hadoop-hdfs/HDFSHighAvailabilityWithQJM.html
+[10]: http://hadoop.apache.org/docs/stable/hadoop-project-dist/hadoop-hdfs/HdfsSnapshots.html
+[11]: http://hadoop.apache.org/docs/current/api/
+[12]: http://hadoop.apache.org/docs/stable/hadoop-project-dist/hadoop-hdfs/HdfsNfsGateway.html
 

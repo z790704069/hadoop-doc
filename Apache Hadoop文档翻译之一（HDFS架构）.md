@@ -97,16 +97,18 @@ HDFS被设计成支持非常大的文件。与HDFS兼容的应用程序是处理
 
 ## FS Shell
 HDFS提供一个称为[FS Shell][13]的命令行接口，方便用户与HDFS中的数据进行交互。这写命令集合的语法跟其他我们熟悉的命令十分相似（例如bash,csh）。下面是一些动作/命令对的示例：
+
 |动作|命令|
-|---|---|
+|:---:|:---:|
 |创建目录|bin/hadoop dfs -mkdir /foodir|
 |删除目录|bin/hadoop fs -rm -R /foodir|
 |查看文件内容|bin/hadoop dfs -cat /foodir/myfile.txt|
 
 ## DFSAdmin
 DFSAdmin命令集是用来管理HDFS集群。只有HDFS管理者才能使用这些命令。下面是一些动作/命令对的示例：
+
 |动作|命令|
-|---|---|
+|:---:|:---:|
 |Put the cluster in Safemode|bin/hdfs dfsadmin -safemode enter|
 |Generate a list of DataNodes|bin/hdfs dfsadmin -report|
 |Recommission or decommission DataNode(s)|bin/hdfs dfsadmin -refreshNode|
@@ -118,7 +120,9 @@ A typical HDFS install configures a web server to expose the HDFS namespace thro
 
 # 空间回收
 ## 文件的删除和恢复
+如果垃圾配置可用，使用HDFS SHELL删除的文件不会立刻从HDFS删除，而是被移动到垃圾目录（每个用户都有自己的垃圾目录：/user/<username>/.Trash），文件只要在垃圾目录中，可以随时进行恢复。
 
+大部分刚删除的文件都被移动到垃圾目录中（/user/<username>/.Trash/Current），并且在一个可配置的间隔时间内，HDFS为当前垃圾目录中的文件创建检查点（under /user/<username>/.Trash/<date>），同时删除那些过期的检查点。垃圾检查点信息请点击[expunge command of FS shell][16]
 
 # 参考
 Hadoop [Java API][14]
@@ -142,4 +146,5 @@ HDFS源码: [http://hadoop.apache.org/version_control.html][15]
 [13]: http://hadoop.apache.org/docs/stable/hadoop-project-dist/hadoop-common/FileSystemShell.html
 [14]: http://hadoop.apache.org/docs/current/api/
 [15]: http://hadoop.apache.org/version_control.html
+[16]: http://hadoop.apache.org/docs/stable/hadoop-project-dist/hadoop-common/FileSystemShell.html#expunge
 

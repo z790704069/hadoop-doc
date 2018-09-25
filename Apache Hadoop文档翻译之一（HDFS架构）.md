@@ -124,6 +124,41 @@ A typical HDFS install configures a web server to expose the HDFS namespace thro
 
 大部分刚删除的文件都被移动到垃圾目录中（/user/<username>/.Trash/Current），并且在一个可配置的间隔时间内，HDFS为当前垃圾目录中的文件创建检查点（under /user/<username>/.Trash/<date>），同时删除那些过期的检查点。垃圾检查点信息请点击[expunge command of FS shell][16]
 
+当回收站中的文件过期后，Namenode会从HDFS命名空间中删除该文件。文件的删除会导致跟该文件相关联的块被释放。需要说明的是文件被用户删除的时间和对应的释放空间的时间之间有一个明显的时间延迟。
+
+下面的例子将展示如何通过FS SHELL将文件从HDFS中删除。我们在要删除的目录中创建test1和test2两个文件
+```
+$ hadoop fs -mkdir -p delete/test1
+$ hadoop fs -mkdir -p delete/test2
+$ hadoop fs -ls delete/
+Found 2 items
+drwxr-xr-x   - hadoop hadoop          0 2015-05-08 12:39 delete/test1
+drwxr-xr-x   - hadoop hadoop          0 2015-05-08 12:40 delete/test2
+```
+
+我们将删除test1文件，下面的日志显示文件被移动到垃圾目录中
+```
+$ hadoop fs -rm -r delete/test1
+Moved: hdfs://localhost:8020/user/hadoop/delete/test1 to trash at: hdfs://localhost:8020/user/hadoop/.Trash/Current
+```
+
+现在我来执行将文件删除跳过垃圾目录选项(skipTrash)，文件则不会转移到垃圾目录。文件将完全从HDFS中移除。
+```
+$ hadoop fs -rm -r -skipTrash delete/test2
+Deleted delete/test2
+```
+
+现在在垃圾目录中，我们只能看到test1文件
+```
+$ hadoop fs -ls .Trash/Current/user/hadoop/delete/
+Found 1 items\
+drwxr-xr-x   - hadoop hadoop          0 2015-05-08 12:39 .Trash/Current/user/hadoop/delete/test1
+```
+也就是test1进入垃圾目录，而test2被永久删除。
+
+## 复制因子减少
+当文件的复制因子减小时，NameNode将在可以删除的副本中选中多余的副本。在下一个心跳通讯中将该信息传输给DataNode。然后DataNode移除对应的数据块并且释放对应的空间。再重申一遍，在完成复制因子的设置和集群中出现新的空间之间有个时间延迟。
+
 # 参考
 Hadoop [Java API][14]
 HDFS源码: [http://hadoop.apache.org/version_control.html][15]

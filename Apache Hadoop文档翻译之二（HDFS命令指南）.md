@@ -5,7 +5,7 @@
 
 Hadoop有一个选项解析框架，它采用解析通用选项以及运行类。
 |COMMAND_OPTIONS|Description|
-|-|-|
+|:-:|:-:|
 |--config --loglevel|The common set of shell options. These are documented on the [Commands Manual][1] page.|
 |GENERIC_OPTIONS|The common set of options supported by multiple commands. See the Hadoop [Commands Manual][1] for more information.|
 |COMMAND   COMMAND_OPTIONS|Various commands with their options are described in the following sections. The commands have been grouped into [User Commands][2] and [Administration Commands][3].|
@@ -15,7 +15,7 @@ Hadoop有一个选项解析框架，它采用解析通用选项以及运行类�
 ## classpath
 用法: hdfs classpath [--glob |--jar <path> |-h |--help]
 |COMMAND_OPTION|Description|
-|-|-|
+|:-:|:-:|
 |--glob|expand wildcards|
 |--jar path|write classpath as manifest in jar named path|
 |-h, --help|print help|

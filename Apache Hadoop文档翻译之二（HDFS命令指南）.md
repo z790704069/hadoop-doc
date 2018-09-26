@@ -53,23 +53,23 @@ Hadoop有一个选项解析框架，它采用解析通用选项以及运行类�
           [-storagepolicies] [-maintenance] [-blockId <blk_Id>]
 ```
 
-|COMMAND_OPTION|	Description|
+|COMMAND_OPTION|    Description|
 |:-|:-|
-|path	|Start checking from this path.|
-|-delete|	Delete corrupted files.|
-|-files|	Print out files being checked.|
-|-files -blocks|	Print out the block report|
-|-files -blocks -locations	|Print out locations for every block.|
-|-files -blocks -racks	|Print out network topology for data-node locations.|
-|-files -blocks -replicaDetails	|Print out each replica details.|
-|-files -blocks -upgradedomains	|Print out upgrade domains for every block.|
-|-includeSnapshots|	Include snapshot data if the given path indicates a snapshottable directory or there are snapshottable directories under it.|
-|-list-corruptfileblocks|	Print out list of missing blocks and files they belong to.|
-|-move|	Move corrupted files to /lost+found.|
-|-openforwrite|	Print out files opened for write.|
-|-storagepolicies	|Print out storage policy summary for the blocks.|
-|-maintenance|	Print out maintenance state node details.|
-|-blockId	|Print out information about the block.|
+|path     |Start checking from this path.|
+|-delete| Delete corrupted files.|
+|-files|  Print out files being checked.|
+|-files -blocks|    Print out the block report|
+|-files -blocks -locations    |Print out locations for every block.|
+|-files -blocks -racks   |Print out network topology for data-node locations.|
+|-files -blocks -replicaDetails    |Print out each replica details.|
+|-files -blocks -upgradedomains    |Print out upgrade domains for every block.|
+|-includeSnapshots| Include snapshot data if the given path indicates a snapshottable directory or there are snapshottable directories under it.|
+|-list-corruptfileblocks|     Print out list of missing blocks and files they belong to.|
+|-move|   Move corrupted files to /lost+found.|
+|-openforwrite|     Print out files opened for write.|
+|-storagepolicies   |Print out storage policy summary for the blocks.|
+|-maintenance| Print out maintenance state node details.|
+|-blockId |Print out information about the block.|
 
 运行HDFS文件系统检查实用程序。详细内容请参见 [fsck][6]
 
@@ -84,15 +84,15 @@ hdfs getconf -excludeFile
 hdfs getconf -nnRpcAddresses
 hdfs getconf -confKey [key]
 ```
-|COMMAND_OPTION|	Description|
+|COMMAND_OPTION|    Description|
 |:-|:-|
-|-namenodes	|gets list of namenodes in the cluster.|
-|-secondaryNameNodes|	gets list of secondary namenodes in the cluster.|
-|-backupNodes	|gets list of backup nodes in the cluster.|
-|-includeFile|	gets the include file path that defines the datanodes that can join the cluster.|
-|-excludeFile	|gets the exclude file path that defines the datanodes that need to decommissioned.|
-|-nnRpcAddresses|	gets the namenode rpc addresses|
-|-confKey [key]	|gets a specific key from the configuration|
+|-namenodes    |gets list of namenodes in the cluster.|
+|-secondaryNameNodes|    gets list of secondary namenodes in the cluster.|
+|-backupNodes  |gets list of backup nodes in the cluster.|
+|-includeFile| gets the include file path that defines the datanodes that can join the cluster.|
+|-excludeFile  |gets the exclude file path that defines the datanodes that need to decommissioned.|
+|-nnRpcAddresses|   gets the namenode rpc addresses|
+|-confKey [key]     |gets a specific key from the configuration|
 
 从配置目录中获取配置信息，进行后处理。
 
@@ -103,22 +103,22 @@ hdfs getconf -confKey [key]
 ## lsSnapshottableDir
 用法: hdfs lsSnapshottableDir [-help]
 
-|COMMAND_OPTION|	Description|
+|COMMAND_OPTION|    Description|
 |:-|:-|
-|-help|	print help|
+|-help|   print help|
 
 返回快照目录列表。当使用超级用户运行时，会返回所有快照目录，否则返回属于该用于的快照目录。
 
 ## jmxget
 用法: hdfs jmxget [-localVM ConnectorURL | -port port | -server mbeanserver | -service service]
 
-|COMMAND_OPTION	|Description|
+|COMMAND_OPTION     |Description|
 |:-|:-|
-|-help|	print help|
-|-localVM ConnectorURL	|connect to the VM on the same machine|
-|-port mbean server port|	specify mbean server port, if missing it will try to connect to MBean Server in the same VM|
-|-server|	specify mbean server (localhost by default)|
-|-service NameNode\|DataNode	|specify jmx service. NameNode by default.|
+|-help|   print help|
+|-localVM ConnectorURL   |connect to the VM on the same machine|
+|-port mbean server port|     specify mbean server port, if missing it will try to connect to MBean Server in the same VM|
+|-server| specify mbean server (localhost by default)|
+|-service NameNode\|DataNode  |specify jmx service. NameNode by default.|
 
 从服务中dump JMX信息
 
@@ -127,20 +127,20 @@ hdfs getconf -confKey [key]
 
 必需的命令行参数：
 
-|COMMAND_OPTION	|Description|
+|COMMAND_OPTION     |Description|
 |:-|:-|
-|-i,--inputFile arg|	edits file to process, xml (case insensitive) extension means XML format, any other filename means binary format|
-|-o,--outputFile arg|	Name of output file. If the specified file exists, it will be overwritten, format of the file is determined by -p option|
+|-i,--inputFile arg|     edits file to process, xml (case insensitive) extension means XML format, any other filename means binary format|
+|-o,--outputFile arg|    Name of output file. If the specified file exists, it will be overwritten, format of the file is determined by -p option|
 
 可选命令行参数：
 
-|COMMAND_OPTION	|Description|
+|COMMAND_OPTION     |Description|
 |:-|:-|
-|-f,--fix-txids|	Renumber the transaction IDs in the input, so that there are no gaps or invalid transaction IDs.|
-|-h,--help	|Display usage information and exit|
-|-r,--recover|	When reading binary edit logs, use recovery mode. This will give you the chance to skip corrupt parts of the edit log.|
-|-p,--processor arg|	Select which type of processor to apply against image file, currently supported processors are: binary (native binary format that Hadoop uses), xml (default, XML format), stats (prints statistics about edits file)|
-|-v,--verbose|	More verbose output, prints the input and output filenames, for processors that write to a file, also output to screen. On large image files this will dramatically increase processing time (default is false).|
+|-f,--fix-txids|    Renumber the transaction IDs in the input, so that there are no gaps or invalid transaction IDs.|
+|-h,--help     |Display usage information and exit|
+|-r,--recover| When reading binary edit logs, use recovery mode. This will give you the chance to skip corrupt parts of the edit log.|
+|-p,--processor arg|     Select which type of processor to apply against image file, currently supported processors are: binary (native binary format that Hadoop uses), xml (default, XML format), stats (prints statistics about edits file)|
+|-v,--verbose| More verbose output, prints the input and output filenames, for processors that write to a file, also output to screen. On large image files this will dramatically increase processing time (default is false).|
 
 Hadoop离线编辑查看器。 有关详细信息，请参阅[Offline Edits Viewer Guide][7]
 
@@ -149,24 +149,24 @@ Hadoop离线编辑查看器。 有关详细信息，请参阅[Offline Edits View
 
 必需的命令行参数：
 
-|COMMAND_OPTION|	Description|
+|COMMAND_OPTION|    Description|
 |:-|:-|
-|-i|--inputFile input file|	Specify the input fsimage file (or XML file, if ReverseXML processor is used) to process.|
+|-i|--inputFile input file|   Specify the input fsimage file (or XML file, if ReverseXML processor is used) to process.|
 
 可选命令行参数：
 
 
-|COMMAND_OPTION	|Description|
+|COMMAND_OPTION     |Description|
 |:-|:-|
-|-o,--outputFile output file|	Specify the output filename, if the specified output processor generates one. If the specified file already exists, it is silently overwritten. (output to stdout by default) If the input file is an XML file, it also creates an <outputFile>.md5.|
-|-p,--processor processor	|Specify the image processor to apply against the image file. Currently valid options are Web (default), XML, Delimited, FileDistribution and ReverseXML.|
-|-addr address|	Specify the address(host:port) to listen. (localhost:5978 by default). This option is used with Web processor.|
-|-maxSize size|	Specify the range [0, maxSize] of file sizes to be analyzed in bytes (128GB by default). This option is used with FileDistribution processor.|
-|-step size	|Specify the granularity of the distribution in bytes (2MB by default). This option is used with FileDistribution processor.|
-|-format|	Format the output result in a human-readable fashion rather than a number of bytes. (false by default). This option is used with FileDistribution processor.|
-|-delimiter arg	|Delimiting string to use with Delimited processor.|
-|-t,--temp temporary dir|	Use temporary dir to cache intermediate result to generate Delimited outputs. If not set, Delimited processor constructs the namespace in memory before outputting text.|
-|-h,--help|	Display the tool usage and help information and exit.|
+|-o,--outputFile output file| Specify the output filename, if the specified output processor generates one. If the specified file already exists, it is silently overwritten. (output to stdout by default) If the input file is an XML file, it also creates an <outputFile>.md5.|
+|-p,--processor processor     |Specify the image processor to apply against the image file. Currently valid options are Web (default), XML, Delimited, FileDistribution and ReverseXML.|
+|-addr address|     Specify the address(host:port) to listen. (localhost:5978 by default). This option is used with Web processor.|
+|-maxSize size|     Specify the range [0, maxSize] of file sizes to be analyzed in bytes (128GB by default). This option is used with FileDistribution processor.|
+|-step size    |Specify the granularity of the distribution in bytes (2MB by default). This option is used with FileDistribution processor.|
+|-format| Format the output result in a human-readable fashion rather than a number of bytes. (false by default). This option is used with FileDistribution processor.|
+|-delimiter arg     |Delimiting string to use with Delimited processor.|
+|-t,--temp temporary dir|     Use temporary dir to cache intermediate result to generate Delimited outputs. If not set, Delimited processor constructs the namespace in memory before outputting text.|
+|-h,--help|    Display the tool usage and help information and exit.|
 
 针对image文件的hadoop离线查看器（hadoop2.4及以上版本）。详见 [Offline Image Viewer Guide][8]
 
@@ -174,23 +174,23 @@ Hadoop离线编辑查看器。 有关详细信息，请参阅[Offline Edits View
 
 用法: hdfs oiv_legacy [OPTIONS] -i INPUT_FILE -o OUTPUT_FILE
 
-|COMMAND_OPTION|	Description|
+|COMMAND_OPTION|    Description|
 |:-|:-|
-|-i,--inputFile input file|	Specify the input fsimage file to process.|
-|-o,--outputFile output file	|Specify the output filename, if the specified output processor generates one. If the specified file already exists, it is silently overwritten|
+|-i,--inputFile input file|   Specify the input fsimage file to process.|
+|-o,--outputFile output file  |Specify the output filename, if the specified output processor generates one. If the specified file already exists, it is silently overwritten|
 
 可选命令行参数：
 
-|COMMAND_OPTION|	Description|
+|COMMAND_OPTION|    Description|
 |:-|:-|
-|-p\|--processor processor|	Specify the image processor to apply against the image file. Valid options are Ls (default), XML, Delimited, Indented, FileDistribution and NameDistribution.|
-|-maxSize size|	Specify the range [0, maxSize] of file sizes to be analyzed in bytes (128GB by default). This option is used with FileDistribution processor.|
-|-step size	|Specify the granularity of the distribution in bytes (2MB by default). This option is used with FileDistribution processor.|
-|-format|	Format the output result in a human-readable fashion rather than a number of bytes. (false by default). This option is used with FileDistribution processor.|
-|-skipBlocks|	Do not enumerate individual blocks within files. This may save processing time and outfile file space on namespaces with very large files. The Ls processor reads the blocks to correctly determine file sizes and ignores this option.|
-|-printToScreen	|Pipe output of processor to console as well as specified file. On extremely large namespaces, this may increase processing time by an order of magnitude.|
-|-delimiter arg	|When used in conjunction with the Delimited processor, replaces the default tab delimiter with the string specified by arg.|
-|-h\|--help	|Display the tool usage and help information and exit.|
+|-p\|--processor processor|   Specify the image processor to apply against the image file. Valid options are Ls (default), XML, Delimited, Indented, FileDistribution and NameDistribution.|
+|-maxSize size|     Specify the range [0, maxSize] of file sizes to be analyzed in bytes (128GB by default). This option is used with FileDistribution processor.|
+|-step size    |Specify the granularity of the distribution in bytes (2MB by default). This option is used with FileDistribution processor.|
+|-format| Format the output result in a human-readable fashion rather than a number of bytes. (false by default). This option is used with FileDistribution processor.|
+|-skipBlocks|  Do not enumerate individual blocks within files. This may save processing time and outfile file space on namespaces with very large files. The Ls processor reads the blocks to correctly determine file sizes and ignores this option.|
+|-printToScreen     |Pipe output of processor to console as well as specified file. On extremely large namespaces, this may increase processing time by an order of magnitude.|
+|-delimiter arg     |When used in conjunction with the Delimited processor, replaces the default tab delimiter with the string specified by arg.|
+|-h\|--help    |Display the tool usage and help information and exit.|
 
 针对老版本的image文件的hadoop离线查看器。详见[HDFS Snapshot Documentation][9]
 
@@ -215,7 +215,7 @@ hdfs balancer
           [-runDuringUpgrade]
 ```
 
-|COMMAND_OPTION	|Description|
+|COMMAND_OPTION     |Description|
 |:-|:-|
 |-policy <policy>|atanode (default): Cluster is balanced if each datanode is balanced.blockpool: Cluster is balanced if each block pool in each datanode is balanced.|
 |-threshold <threshold>|Percentage of disk capacity. This overwrites the default threshold.|
@@ -224,11 +224,132 @@ hdfs balancer
 |-source -f \<hosts-file\> \| \<comma-separated list of hosts\>|Pick only the specified datanodes as source nodes.|
 |-blockpools \<comma-separated list of blockpool ids\>|The balancer will only run on blockpools included in this list.|
 |-idleiterations \<iterations\>|Maximum number of idle iterations before exit. This overwrites the default idleiterations(5).|
-|-runDuringUpgrade|	Whether to run the balancer during an ongoing HDFS upgrade. This is usually not desired since it will not affect used space on over-utilized machines.|
-|-h|--help|Display the tool usage and help information and exit.|
+|-runDuringUpgrade| Whether to run the balancer during an ongoing HDFS upgrade. This is usually not desired since it will not affect used space on over-utilized machines.|
+|-h\|--help|Display the tool usage and help information and exit.|
+
+运行集群平衡器应用程序，管理员可以简单地通过Ctrl-C指令停止平衡器进程。更多信息详见[Balancer][10]。
+
+注意，blockpool策略比datanode策略更严格。
+
+除上述命令选项外，从2.7.0之后还引入了一个固定功能，以防止某些副本被平衡器/移动器移动。该功能默认情况下禁用，可通过配置属性“dfs.datanode.block-pinning.enabled”来启用。启用时，此功能仅影响调用create()从而写入指定节点的数据块。对于HBase Regionserver等应用程序，我们希望维护数据局部性时，此功能非常有用。
+
+## cacheadmin
+用法：
+```
+hdfs cacheadmin [-addDirective -path <path> -pool <pool-name> [-force] [-replication <replication>] [-ttl <time-to-live>]]
+hdfs cacheadmin [-modifyDirective -id <id> [-path <path>] [-force] [-replication <replication>] [-pool <pool-name>] [-ttl <time-to-live>]]
+hdfs cacheadmin [-listDirectives [-stats] [-path <path>] [-pool <pool>] [-id <id>]]
+hdfs cacheadmin [-removeDirective <id>]
+hdfs cacheadmin [-removeDirectives -path <path>]
+hdfs cacheadmin [-addPool <name> [-owner <owner>] [-group <group>] [-mode <mode>] [-limit <limit>] [-maxTtl <maxTtl>]]
+hdfs cacheadmin [-modifyPool <name> [-owner <owner>] [-group <group>] [-mode <mode>] [-limit <limit>] [-maxTtl <maxTtl>]]
+hdfs cacheadmin [-removePool <name>]
+hdfs cacheadmin [-listPools [-stats] [<name>]]
+hdfs cacheadmin [-help <command-name>]
+```
+
+更多信息请查看 [HDFS Cache Administration Documentation][11]
+
+## crypto
+用法：
+```
+hdfs crypto -createZone -keyName <keyName> -path <path>
+hdfs crypto -listZones
+hdfs crypto -provisionTrash -path <path>
+hdfs crypto -help <command-name>
+```
+
+更多信息请查看[HDFS Transparent Encryption Documentation ][12]
+
+## datanode
+用法: hdfs datanode [-regular | -rollback | -rollingupgrade rollback]
+
+|COMMAND_OPTION     |Description|
+|:-|:-|
+|-regular |Normal datanode startup (default).|
+|-rollback     |Rollback the datanode to the previous version. This should be used after stopping the datanode and distributing the old hadoop version.|
+|-rollingupgrade rollback     |Rollback a rolling upgrade operation.|
+
+运行一个HDFS datanode
+
+## dfsadmin
+用法：
+```
+    hdfs dfsadmin [-report [-live] [-dead] [-decommissioning] [-enteringmaintenance] [-inmaintenance]]
+    hdfs dfsadmin [-safemode enter | leave | get | wait | forceExit]
+    hdfs dfsadmin [-saveNamespace]
+    hdfs dfsadmin [-rollEdits]
+    hdfs dfsadmin [-restoreFailedStorage true |false |check]
+    hdfs dfsadmin [-refreshNodes]
+    hdfs dfsadmin [-setQuota <quota> <dirname>...<dirname>]
+    hdfs dfsadmin [-clrQuota <dirname>...<dirname>]
+    hdfs dfsadmin [-setSpaceQuota <quota> [-storageType <storagetype>] <dirname>...<dirname>]
+    hdfs dfsadmin [-clrSpaceQuota [-storageType <storagetype>] <dirname>...<dirname>]
+    hdfs dfsadmin [-finalizeUpgrade]
+    hdfs dfsadmin [-rollingUpgrade [<query> |<prepare> |<finalize>]]
+    hdfs dfsadmin [-refreshServiceAcl]
+    hdfs dfsadmin [-refreshUserToGroupsMappings]
+    hdfs dfsadmin [-refreshSuperUserGroupsConfiguration]
+    hdfs dfsadmin [-refreshCallQueue]
+    hdfs dfsadmin [-refresh <host:ipc_port> <key> [arg1..argn]]
+    hdfs dfsadmin [-reconfig <namenode|datanode> <host:ipc_port> <start |status |properties>]
+    hdfs dfsadmin [-printTopology]
+    hdfs dfsadmin [-refreshNamenodes datanodehost:port]
+    hdfs dfsadmin [-getVolumeReport datanodehost:port]
+    hdfs dfsadmin [-deleteBlockPool datanode-host:port blockpoolId [force]]
+    hdfs dfsadmin [-setBalancerBandwidth <bandwidth in bytes per second>]
+    hdfs dfsadmin [-getBalancerBandwidth <datanode_host:ipc_port>]
+    hdfs dfsadmin [-fetchImage <local directory>]
+    hdfs dfsadmin [-allowSnapshot <snapshotDir>]
+    hdfs dfsadmin [-disallowSnapshot <snapshotDir>]
+    hdfs dfsadmin [-shutdownDatanode <datanode_host:ipc_port> [upgrade]]
+    hdfs dfsadmin [-evictWriters <datanode_host:ipc_port>]
+    hdfs dfsadmin [-getDatanodeInfo <datanode_host:ipc_port>]
+    hdfs dfsadmin [-metasave filename]
+    hdfs dfsadmin [-triggerBlockReport [-incremental] <datanode_host:ipc_port>]
+    hdfs dfsadmin [-listOpenFiles]
+    hdfs dfsadmin [-help [cmd]]
+```
+
+运行一个HDFS dfsadmin客户端。
+
+## dfsrouter
+用法: hdfs dfsrouter
+
+运行DFS router。详见[Router][13]
 
 
+## dfsrouteradmin
+用法：
+```
+hdfs dfsrouteradmin
+      [-add <source> <nameservice> <destination> [-readonly] -owner <owner> -group <group> -mode <mode>]
+      [-rm <source>]
+      [-ls <path>]
+      [-safemode enter | leave | get]
+```
 
+## journalnode
+用法: hdfs journalnode
+该命令启动一个journalnode,详见[HDFS HA with QJM][14]
+
+## namenode
+用法：
+```
+hdfs namenode [-backup] |
+          [-checkpoint] |
+          [-format [-clusterid cid ] [-force] [-nonInteractive] ] |
+          [-upgrade [-clusterid cid] [-renameReserved<k-v pairs>] ] |
+          [-upgradeOnly [-clusterid cid] [-renameReserved<k-v pairs>] ] |
+          [-rollback] |
+          [-rollingUpgrade <rollback|downgrade |started> ] |
+          [-finalize] |
+          [-importCheckpoint] |
+          [-initializeSharedEdits] |
+          [-bootstrapStandby [-force] [-nonInteractive] [-skipSharedEditsCheck] ] |
+          [-recover [-force] ] |
+          [-metadataVersion ]
+```
 
 
 
@@ -241,3 +362,8 @@ hdfs balancer
 [7]: http://hadoop.apache.org/docs/stable/hadoop-project-dist/hadoop-hdfs/HdfsEditsViewer.html
 [8]: http://hadoop.apache.org/docs/stable/hadoop-project-dist/hadoop-hdfs/HdfsImageViewer.html
 [9]: http://hadoop.apache.org/docs/stable/hadoop-project-dist/hadoop-hdfs/HdfsSnapshots.html#Get_Snapshots_Difference_Report
+[10]: http://hadoop.apache.org/docs/stable/hadoop-project-dist/hadoop-hdfs/HdfsUserGuide.html#Balancer
+[11]: http://hadoop.apache.org/docs/stable/hadoop-project-dist/hadoop-hdfs/CentralizedCacheManagement.html#cacheadmin_command-line_interface
+[12]: http://hadoop.apache.org/docs/stable/hadoop-project-dist/hadoop-hdfs/TransparentEncryption.html#crypto_command-line_interface
+[13]: http://hadoop.apache.org/docs/stable/hadoop-project-dist/hadoop-hdfs/HDFSRouterFederation.html#Router
+[14]: http://hadoop.apache.org/docs/stable/hadoop-project-dist/hadoop-hdfs/HDFSHighAvailabilityWithQJM.html#Administrative_commands

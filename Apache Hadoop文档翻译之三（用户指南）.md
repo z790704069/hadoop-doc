@@ -32,13 +32,38 @@ HDFS是使用Hadoop程序来实现的分布式存储系统。一个HDFS集群主
 接下来的文档假设用户有能力搭建并运行至少有一个Datanode的HDFS。完成本文档的学习，用户可以将Namenode和Datanode放在同一台物理机上。
 
 # Web接口
-Namenode和Datanode内部都运行了web服务，用来展示集群当前状态的基本信息。默认配置下，Namenode的前端页面请访问http://namenode-name:50070/。该页面展示Datanode列表以及集群的基本统计信息。这个web接口同样可以用来浏览文件系统（点击页面中的“Browse the file system”）。
+Namenode和Datanode内部都运行了web服务，用来展示集群当前状态的基本信息。默认配置下，Namenode的前端页面请访问http://namenode-name:50070/。 该页面展示Datanode列表以及集群的基本统计信息。这个web接口同样可以用来浏览文件系统（点击页面中的“Browse the file system”）。
 
 
 # Shell 命令
 Hadoop包含丰富的类 shell 命令，用来跟HDFS和其他Hadoop支持的文件系统进行直接交互。运行“bin/hdfs dfs -help”命令将列出Hadoop支持的命令。此外，运行“bin/hdfs dfs -help command-name” 展示“command-name”命令的详细信息。这些命令支持大部分普通的文件系统操作，例如拷贝文件，修改文件权限等等。它还支持一些HDFS的特定操作，例如改变文件复制。详细信息请查看 [File System Shell Guide][3]
 
 ## DFSAdmin 命令
+“bin/hdfs dfsadmin” 命令支持一些跟HDFS管理员相关的操作。“bin/hdfs dfsadmin -help” 命令会列出当前支持的所有命令。例如：
+* -report: HDFS基础统计信息报告。报告中的一些信息同样可以在Namenode网页上看到。
+* -safemode: 虽然通常不需要，但管理员可以手动地方式进入或离开安全模式。
+* -finalizeUpgrade: 删除上次集群升级过程中所做的备份。
+* -refreshNodes:
+* -printTopology :
+
+更多信息，请查看 [dfsadmin][4]
+
+## Secondary NameNode
+Namenode以日志的形式存储更新信息，该日志信息追加到本地文件edits中。当Namenode启动，它从一个称为“FsImage”的image文件中读取HDFS状态，然后使用编辑日志文件中的修改信息。随后，写入新的HDFS状态到FsImage文件中并使用一个新的空的的edits文件开始常规操作。因为Namenode只在启动的时候才合并Fsimage和edits文件，在一个工作频繁的集群上edits日志文件会变得非常庞大，这会导致Namenode下次重启时会花费很长时间。
+
+Secondary NameNode定期合并Fsimage和edits文件，并保持edits文件大小在一个限定范围内。Secondary NameNode通常运行在与主Namenode不同的机器上，因为Secondary NameNode需要相同大的内存来保证其运行。
+
+启动运行在Secondary NameNode的检查点，主要被被两个配置参数控制：
+* dfs.namenode.checkpoint.period，默认被设置为1小时，指定两个检查点之间的最大间隔时间
+* dfs.namenode.checkpoint.txns，默认设置为一百万，定义Namenode上未检查的事务数量，当达到该数量时进行强制检查，即使是检查间隔时间未到。
+
+Secondary NameNode将最新的检查点保存在与主Namenode项目的文件路径下。所以，当需要时NameNode可以随时读取Secondary NameNode上的检查点image文件。
+
+详细信息，请查看[Secondary NameNode][5]
+
+
+## 检查点节点
+
 
 
 
@@ -46,4 +71,6 @@ Hadoop包含丰富的类 shell 命令，用来跟HDFS和其他Hadoop支持的文
 [1]: http://hadoop.apache.org/docs/stable/hadoop-project-dist/hadoop-common/SingleCluster.html
 [2]: http://hadoop.apache.org/docs/stable/hadoop-project-dist/hadoop-common/ClusterSetup.html
 [3]: http://hadoop.apache.org/docs/stable/hadoop-project-dist/hadoop-common/FileSystemShell.html
+[4]: http://hadoop.apache.org/docs/stable/hadoop-project-dist/hadoop-hdfs/HDFSCommands.html#dfsadmin
+[5]: http://hadoop.apache.org/docs/stable/hadoop-project-dist/hadoop-hdfs/HDFSCommands.html#secondarynamenode
 

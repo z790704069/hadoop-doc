@@ -31,7 +31,7 @@ HDFS是使用Hadoop程序来实现的分布式存储系统。一个HDFS集群主
 
 接下来的文档假设用户有能力搭建并运行至少有一个Datanode的HDFS。完成本文档的学习，用户可以将Namenode和Datanode放在同一台物理机上。
 
-# Web接口
+# Web 接口
 Namenode和Datanode内部都运行了web服务，用来展示集群当前状态的基本信息。默认配置下，Namenode的前端页面请访问http://namenode-name:50070/。 该页面展示Datanode列表以及集群的基本统计信息。这个web接口同样可以用来浏览文件系统（点击页面中的“Browse the file system”）。
 
 
@@ -48,7 +48,7 @@ Hadoop包含丰富的类 shell 命令，用来跟HDFS和其他Hadoop支持的文
 
 更多信息，请查看 [dfsadmin][4]
 
-## Secondary NameNode
+# Secondary NameNode
 Namenode以日志的形式存储更新信息，该日志信息追加到本地文件edits中。当Namenode启动，它从一个称为“FsImage”的image文件中读取HDFS状态，然后使用编辑日志文件中的修改信息。随后，写入新的HDFS状态到FsImage文件中并使用一个新的空的的edits文件开始常规操作。因为Namenode只在启动的时候才合并Fsimage和edits文件，在一个工作频繁的集群上edits日志文件会变得非常庞大，这会导致Namenode下次重启时会花费很长时间。
 
 Secondary NameNode定期合并Fsimage和edits文件，并保持edits文件大小在一个限定范围内。Secondary NameNode通常运行在与主Namenode不同的机器上，因为Secondary NameNode需要相同大的内存来保证其运行。
@@ -62,7 +62,64 @@ Secondary NameNode将最新的检查点保存在与主Namenode项目的文件路
 详细信息，请查看[Secondary NameNode][5]
 
 
-## 检查点节点
+# 检查点节点
+Namenode通过两种文件来维持命名空间：fsimage以及journal (log)。其中，fsimage是命名空间的最大检查点以及编辑文件，journal则记录自上一个检查点之后的更新操作。当NameNode启动时，它会合并fsimage和edits journal以提供文件系统元数据的最新视图。NameNode然后用新的HDFS状态覆盖fsimage并开始一个新的编辑日志。
+
+检查点节点定期创建命名空间的检查点。它从活跃的Namenode上下载fsimage和edits,然后在本地进行合并，最后上传最新的fsimage到活跃的Namenode上。检查点节点通常运行在与主Namenode不同的机器上，因为检查点节点需要相同大的内存来保证其运行。用户可以在配置文件指定的节点上运行“bin/hdfs namenode -checkpoint”来启动检查点节点。
+
+“dfs.namenode.backup.address”和“dfs.namenode.backup.http-address”配置属性可以指定检查点节点的位置以及其web接口地址。
+
+两个配置参数影响检查点的运行：
+* dfs.namenode.checkpoint.period，默认被设置为1小时，指定两个检查点之间的最大间隔时间
+* dfs.namenode.checkpoint.txns，默认设置为一百万，定义Namenode上未检查的事务数量，当达到该数量时进行强制检查，即使是检查间隔时间未到。
+
+检查点节点将最新的检查点保存在与主Namenode项目的文件路径下。所以，当需要时NameNode可以随时读取检查点节点上的检查点image文件。
+
+集群配置文件中可以同时指定多个检查点。
+
+详细信息，请查看 [namenode][6]
+
+
+# 备份节点
+备份节点跟检查点节点一样提供相同的检查功能，将相关信息保存在内存中，更新命名空间的拷贝并与活跃Namenode状态保持同步。除了接受来自NameNode的文件系统编辑的日志流并将其持久保存到磁盘之外，备份节点还将这些编辑应用到其自己的内存中命名空间的副本中，从而创建命名空间的备份。
+
+备份节点不需要像Secondary NameNode和Checkpoint node一样从活动NameNode下载fsimage和编辑文件，以便创建检查点，因为它已经保存命名空间的最新状态在内存中。备份节点进程更高效，因为它只需要将命名空间保存到本地fsimage文件中并重置编辑。
+
+
+因为备份节点需要将命名空间保存在内存中，所以它需要跟Namenode一样的内存大小。
+
+Namenode一次只支持一个备份节点。当备份节点在使用时，我们就无需检查点节点。同时支持多个备份节点将在未来实现。
+
+备份节点的配置方式与检查点节点相同。我们可以使用“bin/hdfs namenode -backup”来启动备份节点。
+
+“dfs.namenode.backup.address”和“dfs.namenode.backup.http-address”配置属性可以指定备份节点的位置以及其web接口地址。
+
+
+备份节点提供了使NameNode运行时不需要进行持久化的选项，将保留命名空间状态的所有责任委派给备份节点。要执行此操作，请使用-importCheckpoint选项来启动NameNode，并为edits类型设置非持久性存储目录 dfs.namenode.edits.dir。
+
+关于备份节点和检查点节点的产生原因的讨论，查看 [HADOOP-4539][7]
+
+# 导入检查点
+如果fsimage和edits文件的备份丢失，我们可以将最新的检查点导入到Namenode中。操作如下：
+* 在配置项“dfs.name.dir”指定的位置建立一个空文件夹
+* 在配置项“dfs.namenode.checkpoint.dir”指定检查点的目录位置
+* 使用“-importCheckpoint”参数启动Namenode
+
+NameNode会从fs.checkpoint.dir目录读取检查点， 并把它保存在“dfs.name.dir”目录下。如果dfs.name.dir目录下有合法的fsimage，NameNode会启动失败。NameNode会检查“fs.checkpoint.dir”目录下镜像文件的一致性，但是不会去改动它。
+
+相信信息，请查看 [namenode][8]
+
+
+# 平衡器
+HDFS数据可能不会均匀地分布在各个Datanode上。一个常见的原因是一个新的Datanode加入到已经存在的集群中。当需要给新的块选择位置，Namenode在选择哪些Datanode来存放前会考虑多个因素：
+* 根据就近原则，将数据块的一个副本放在正在写这个数据块的节点上
+* 考虑将块数据放到不同机架上，以降低单机架故障风险
+* 一个副本通常被放置在和写文件的节点同一机架的某个节点上，从而降低跨机架的带宽消耗
+* 尽量均匀地将HDFS数据分布在集群的DataNode中
+
+由于上述多种考虑需要取舍，数据可能并不会均匀分布在DataNode中。HDFS为管理员提供了一个工具，用于分析数据块分布和重新平衡DataNode上的数据分布。[HADOOP-1652][9] 的附件中的一个PDF是一个简要的rebalancer管理员指南。
+
+详细信息，请查看 [balancer][10]
 
 
 
@@ -73,4 +130,8 @@ Secondary NameNode将最新的检查点保存在与主Namenode项目的文件路
 [3]: http://hadoop.apache.org/docs/stable/hadoop-project-dist/hadoop-common/FileSystemShell.html
 [4]: http://hadoop.apache.org/docs/stable/hadoop-project-dist/hadoop-hdfs/HDFSCommands.html#dfsadmin
 [5]: http://hadoop.apache.org/docs/stable/hadoop-project-dist/hadoop-hdfs/HDFSCommands.html#secondarynamenode
-
+[6]: http://hadoop.apache.org/docs/stable/hadoop-project-dist/hadoop-hdfs/HDFSCommands.html#namenode
+[7]: https://issues.apache.org/jira/browse/HADOOP-4539
+[8]: http://hadoop.apache.org/docs/stable/hadoop-project-dist/hadoop-hdfs/HDFSCommands.html#namenode
+[9]: https://issues.apache.org/jira/browse/HADOOP-1652
+[10]: http://hadoop.apache.org/docs/stable/hadoop-project-dist/hadoop-hdfs/HDFSCommands.html#balancer

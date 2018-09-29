@@ -5,6 +5,24 @@
 
 ![][1]
 
+这些概念中，cluster和service不需要过多解释。其他一些概念，我们将在后面的章节中展开介绍，例如：role group、gateway、host template以及parcel等。
+
+**service**、**role** 的类型以及实例这两个概念容易造成混淆。对于这两个概念，Cloudera Manager 以及本文经常会不进行明确的区分。例如 Cloudera Manager 管理员页面的 **Home > Status** 和 **Clusters > ClusterName** 都会列出集群的服务列表。这个很像编程语言里面 "string" 既可以表示类型（java.lang.String），也可以表示字符串实例（"in here"）。当需要区分类型和实例时，附加单词“type”以表示类型，同样，附加单词“instance”以明确表示实例。
+
+# deployment
+Cloudera Manager 的配置以及所有集群的管理
+
+# dynamic resource pool
+在Cloudera Manager中，负责池中应用服务（例如yarn、Impala等）的资源调度（使用一些可配置的资源以及策略）。
+
+# cluster
+
+
+
+
+
+
+
 
 
 [1]: https://www.cloudera.com/documentation/enterprise/5-7-x/images/xcm_model.jpg.pagespeed.ic.WwXPor5pex.webp

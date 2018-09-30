@@ -29,6 +29,21 @@ Runtime 状态这个概念可以理解为：进程在哪里运行，什么命令
 
 当你更新配置（例如更改 Hue Server 的 web 端口），你就更新了 Model 状态。然后， 当 Hue 正在运行时改变端口，它仍然会使用老的端口。当这种情况发生时，角色会被标记为拥有一个“过时的配置”。为了达到同步，你必须重启角色（触发配置文件重新生成以及进程重启）。
 
+# 配置管理（Configuration Management）
+Cloudera Manager 定义了几个配置级别：
+* 服务级别（service level）: 针对整个服务实例的配置，例如 HDFS 服务默认的复制因子（dfs.replication）。
+
+* 角色组级别（role group level）:  应用到角色成员的配置，例如 Datanode 的句柄数（dfs.datanode.handler.count）。针对不同的 Datanode，这个设置可能不同。例如，在性能更好的硬件上，这个值可以设置更大一些。
+
+* 角色实例级别（role instance level）: 这个级别的配置会覆盖继承自角色组的配置。这里需要谨慎使用，因为会导致与角色组配置之间存在差异。在一些特殊情况下可以使用，比如零时打开 debug 日志级别以发现并解决一些问题。
+
+* 主机也有一些配置，比如配置监控、软件管理以及资源管理等。
+
+* Cloudera Manager本身具有与其自身管理操作相关的配置。
+
+## 角色组（Role Groups）
+
+
 
 
 

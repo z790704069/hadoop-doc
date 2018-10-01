@@ -42,13 +42,21 @@ Cloudera Manager 定义了几个配置级别：
 * Cloudera Manager本身具有与其自身管理操作相关的配置。
 
 ## 角色组（Role Groups）
+你可以给服务实例（例如 HDFS）进行配置，也可以个角色实例（例如 host17上的 Datanode）进行配置。单个角色的配置从服务级别继承，并且如果角色上进行了配置，它将覆盖这个继承。这种机制提供了配置的灵活性，用户也不需要为每一个角色单独进行配置，减少繁杂的配置工作。
 
+Cloudera Manager 支持角色组配置，这是一种将配置分配给一个角色组的机制。这样，组中各个角色都会继承这个配置。例如，在一个拥有不同性能主机组成的集群中，因为性能不同，我们可以为部署在其上的 Datanode 构建不同的配置组（性能好的配置高点，差的配置低点）。在性能高的一些主机上，我们为 Datanode组 运用配置A,性能低的一些主机上，我们运用配置B。
 
+![][3]
 
+## 主机模板（Host Templates）
+通常情况下，一些主机拥有相同的硬件，并且有相同的服务运行在上面。主机模板在集群中提供了一系列角色组，这样做有两个好处：
+* 加入新主机到集群会变得简单 - 应用已经存在的角色组，简单的操作即可完成新主机的加入
+* 对一些列主机进行角色的配置修改将变得简单 - 用户不需要一个个进行修改，用户可以快速的修改集群配置来应对不同的性能负载以及不同用户的需求
 
-
-
+## 服务以及客户端配置（Server and Client Configuration）
+用户有时会诧异，为什么修改 /etc/hadoop/conf 配置并重启 HDFS后并没有生效。这是因为使用 Cloudera Manager 启动服务实例并不是从默认位置的配置文件中读取。拿 HDFS 举例，
 
 
 [1]: https://www.cloudera.com/documentation/enterprise/5-7-x/images/xcm_arch.png.pagespeed.ic.8Cx5_5Dr3T.webp
 [2]: https://www.cloudera.com/documentation/enterprise/5-7-x/images/xstate.png.pagespeed.ic.VrT7FVIqnM.webp
+[3]: https://www.cloudera.com/documentation/enterprise/5-7-x/images/xroles.png.pagespeed.ic.YSb0680MGR.webp

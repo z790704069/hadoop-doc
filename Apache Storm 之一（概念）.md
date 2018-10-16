@@ -1,3 +1,7 @@
+
+![扫码关注微信公众号"Kooola大数据"][14]
+<font color=grey size=1 >扫码关注微信公众号号"Kooola大数据"，一起聊聊大数据</font>
+
 本文列出 Storm 的几个主要概念，并会给出相关资源的链接以便你获取更多信息，概念主要如下：
 * Topologies
 * Streams
@@ -99,5 +103,6 @@ Storm 保证每个 spout 元组都能在拓扑中被处理。通过跟踪由 Spo
 [11]: http://storm.apache.org/releases/1.0.6/javadocs/org/apache/storm/topology/IBasicBolt.html
 [12]: http://storm.apache.org/releases/1.0.6/javadocs/org/apache/storm/task/OutputCollector.html
 [13]: http://storm.apache.org/releases/1.0.6/javadocs/org/apache/storm/Config.html#TOPOLOGY_WORKERS
+[14]: https://www.kooola.com/upload/2018/10/ofjvdo746uj67pmdue0iho59c5.png
 
 

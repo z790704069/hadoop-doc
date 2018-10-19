@@ -1,8 +1,8 @@
 # 大数据相关文档
 
-“hadoop-doc” 计划输出大数据相关的知识和理解，虽然叫“hadoop-doc”，但只不限于 hadoop 家族
+“hadoop-doc” 计划输出大数据相关的知识和理解，虽然叫“hadoop-doc”，但不只限于 hadoop 家族
 
-本 Respository 计划主要涉及几个方面：
+计划主要涉及几个方面：
 
 * 官方文档翻译
 * 相关知识入门&总结性文档

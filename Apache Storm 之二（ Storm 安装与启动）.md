@@ -4,7 +4,7 @@
 
 
 # 部署示例
- ![IMAGE](quiver-image-url/C78AC8E576C2BEF80DE4619907E6F12B.jpg =620x291)
+ ![storm部署图][3]
 
 * 三台主机 mini01 + mini02 + mini03
 * zookeeper 部署在三台主机上
@@ -26,3 +26,4 @@
 
 [1]: https://www.kooola.com/article/zookeeper
 [2]: http://storm.apache.org/downloads.html
+[3]: https://www.kooola.com/upload/2018/10/q6v7dhacfsjf0q32on9ko6im6j.png

@@ -114,18 +114,25 @@ mini02 和 mini03 上可以看到 supervisor 进程
 访问 mini01:8088
 ![Storm UI][6]
 
-> Tips: 在安装启动时可能会有一些报错（例如下面），但都不是大问题。请确保：
-1、防火墙没有阻止端口，包括 zookeeper 和 storm。
-2、zookeeper 正常启动。
-3、/etc/hosts 配置正确。
+
+Tips: 在安装启动时可能会有一些报错（例如下面）：
 
 * storm nimbus not a leader
 * java.util.zip.ZipException: Not in GZIP format
 * org.apache.storm.shade.org.apache.zookeeper.KeeperException$NoNodeException: KeeperErrorCode = NoNode 
 
-**zookeeper 报错请查看 ZK_HOME/bin/zookeeper.out; 
-nimbus 报错请查看 STORM_HOME/logs/nimbus.log; 
-supervisor 报错请查看 STORM_HOME/logs/supervisor.log**
+请确保： 
+
+* 防火墙没有阻止端口，包括 zookeeper 和 storm。
+* zookeeper 正常启动。
+* /etc/hosts 配置正确。
+
+
+不能正常运行，**查看如下几个日志，对症下药**即可：
+
+* zookeeper 报错请查看 ZK_HOME/bin/zookeeper.out; 
+* nimbus 报错请查看 STORM_HOME/logs/nimbus.log; 
+* supervisor 报错请查看 STORM_HOME/logs/supervisor.log
 
 
 

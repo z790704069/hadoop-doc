@@ -91,7 +91,7 @@ nohup storm ui &
 ```
 mini02 和 mini03 上启动 supervisor
 ```
-nohup storm nimbus &
+nohup storm supervisor &
 ```
 # 验证
 ## jps

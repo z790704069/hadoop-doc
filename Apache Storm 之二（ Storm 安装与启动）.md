@@ -115,7 +115,9 @@ mini02 和 mini03 上可以看到 supervisor 进程
 ![Storm UI][6]
 
 
-Tips: 在安装启动时可能会有一些报错（例如下面）：
+# Tips
+
+在安装启动时可能会有一些报错（例如下面）：
 
 * storm nimbus not a leader
 * java.util.zip.ZipException: Not in GZIP format

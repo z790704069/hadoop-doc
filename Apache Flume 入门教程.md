@@ -1,6 +1,8 @@
 # 概要
 Apache Flume 是一个分布式，可靠且可用的系统，用于有效地从许多不同的源收集、聚合和移动大量日志数据到一个集中式的数据存储区。
+
 Flume 的使用不只限于日志数据。因为数据源可以定制，flume 可以被用来传输大量事件数据，这些数据不仅仅包括网络通讯数据、社交媒体产生的数据、电子邮件信息等等。
+
 Apache Flume 是 Apache 基金会的顶级项目，在加入 Apache 之前由 cloudera 开发维护。
 Apache Flume 目前有两种版本： 0.9.x 和 1.x。 其中 0.9.x 的版本我们称之为 Flume OG（original generation）。2011 年 10 月 22 号，cloudera 完成了 Flume-728，对 Flume 进行了里程碑式的改动：重构核心组件、核心配置以及代码架构，重构后的版本统称为 Flume NG（next generation），也就是这里的 1.x 版本。
 
@@ -16,9 +18,16 @@ Apache Flume 目前有两种版本： 0.9.x 和 1.x。 其中 0.9.x 的版本我
 **Flume slink** 从 channel 消费完数据就将数据从 channel 中清除，随后将数据放到外部存储系统例如 HDFS （使用 Flume HDFS sink）或发送到其他 Flume agent 的 source 中。不管是 Source 还是 Slink 都是异步发送和消费数据。
 
 ## 复杂的流
+Flume 允许用户构建一个复杂的数据流，比如数据流经多个 agent 最终落地。It also allows fan-in and fan-out flows, contextual routing and backup routes (fail-over) for failed hops.
+
+## 可靠性
+事件被存储在每个 agent 的 channel 中。随后这些事件会发送到流中的下一个 agent 或者设备存储中（例如 HDFS）。只有事件已经被存储在下一个 agent 的 channel 或设备存储中时，当前 channel 才会清除该事件。这种机制保证了流在端到端的传输中具有可靠性。
+
+Flume使用事务方法（transactional approach）来保证事件的可靠传输。
 
 
-![][2]
+
+
 
 [1]: http://flume.apache.org/_images/UserGuide_image00.png
 

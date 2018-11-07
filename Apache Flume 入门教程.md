@@ -23,7 +23,23 @@ Flume 允许用户构建一个复杂的数据流，比如数据流经多个 agen
 ## 可靠性
 事件被存储在每个 agent 的 channel 中。随后这些事件会发送到流中的下一个 agent 或者设备存储中（例如 HDFS）。只有事件已经被存储在下一个 agent 的 channel 或设备存储中时，当前 channel 才会清除该事件。这种机制保证了流在端到端的传输中具有可靠性。
 
-Flume使用事务方法（transactional approach）来保证事件的可靠传输。
+Flume使用事务方法（transactional approach）来保证事件的可靠传输。在 source 和 slink 中，事件的存储以及恢复作为事务进行封装，存放事件到 channel 中以及从 channel 中拉取事件均是事务性的。这保证了流中的事件在节点之间传输是可靠的。
+
+## 可恢复
+事件在 channel 中进行，该 channel 负责管理事件从故障中恢复。Flume 支持一个由本地文件系统支持的持久化文件（文件模式：channel.type = "file"） channel。同样也只存内存模式（channel.type = "memmory"）,将事件保存在内存队列中。内存模式相对与文件模型性能更好，但是当 agent 进程不幸挂掉时，存储在 channel 中的事件将丢失，无法进行恢复。
+
+# 构建
+
+## 构建一个 agent
+Flume agent 的配置保存在一个本地配置文件中。它是一个 text 文本，java 程序可以直接方便地读取属性。可以在同一配置文件中指定一个或多个 agent 的配置。配置文件指定了 agnet 中每个 source、channel、slink 的属性，以及三者如何组合形成数据流。
+
+### 配置单个组件
+流中的每一个组件（source、channel、slink）都有自己的名称、类型以及一系列配置属性。例如，一个 Avro source 需要配置 hostname (或者 IP 地址)以及端口号来接收数据。一个内存模式 channel 可以有最大队列长度的属性（"capacity": channel 中最大容纳多少事件）。一个 HDFS slink 则需要知道文件系统的 URL（hdfs://****）、文件落地的路径、文件回滚的评率（"hdfs.rollInterval": 每隔多少秒将零时文件回滚成最终文件保存到 HDFS 中）。所有这个关于各个组件的属性需要在配置文件中进行指定。
+
+### 将各个部分组合起来
+Agent 需要知道加载哪些组件以及如何将这些组件组合起来形成数据流。
+
+
 
 
 

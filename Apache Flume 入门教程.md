@@ -37,7 +37,74 @@ Flume agent 的配置保存在一个本地配置文件中。它是一个 text �
 流中的每一个组件（source、channel、slink）都有自己的名称、类型以及一系列配置属性。例如，一个 Avro source 需要配置 hostname (或者 IP 地址)以及端口号来接收数据。一个内存模式 channel 可以有最大队列长度的属性（"capacity": channel 中最大容纳多少事件）。一个 HDFS slink 则需要知道文件系统的 URL（hdfs://****）、文件落地的路径、文件回滚的评率（"hdfs.rollInterval": 每隔多少秒将零时文件回滚成最终文件保存到 HDFS 中）。所有这个关于各个组件的属性需要在配置文件中进行指定。
 
 ### 将各个部分组合起来
-Agent 需要知道加载哪些组件以及如何将这些组件组合起来形成数据流。
+Agent 需要知道加载哪些组件以及如何将这些组件组合起来形成数据流。Flume 指定每个组件的名称（source、channel、slink），同时明确地告诉我们 channel 与 哪些 source 和 slink 连接，这样各个组件就能组合起来。例如，一个叫 "avroWeb" 的 source 通过一个叫 "file-channel" 的channel 将事件传递到 HDFS sink 中。配置文件将包含这些组件的名称以及组合关系。
+
+### 开始一个 agent
+我们可以通过 Flume bin 目录下的脚本文件（flume-ng）来启动 agent。在命令后面，你需要指定 agent 的名称、配置文件：
+
+```
+$ bin/flume-ng agent -n $agent_name -c conf -f conf/flume-conf.properties.template
+```
+
+运行以上命令，agent 将会按照配置文件里描述的方式来运行 source 和 slink。
+
+### 一个简单的示例
+这里，我们给出一个配置文件的示例，该示例为 flume 单节点部署的配置方式。
+
+```
+# example.conf: A single-node Flume configuration
+
+# Name the components on this agent
+a1.sources = r1
+a1.sinks = k1
+a1.channels = c1
+
+# Describe/configure the source
+a1.sources.r1.type = netcat
+a1.sources.r1.bind = localhost
+a1.sources.r1.port = 44444
+
+# Describe the sink
+a1.sinks.k1.type = logger
+
+# Use a channel which buffers events in memory
+a1.channels.c1.type = memory
+a1.channels.c1.capacity = 1000
+a1.channels.c1.transactionCapacity = 100
+
+# Bind the source and sink to the channel
+a1.sources.r1.channels = c1
+a1.sinks.k1.channel = c1
+```
+
+看看这个配置文件，我们可以发现这个 agent 的名称是 a1。其中该 agent 的 source 监听 44444 端口。channel 采用内存模式，而 slink 直接输出到数据到 控制台上（logger）。配置文件指定了各个组件的名称，并描述了它们的类型以及其他属性。当然，一个配置文件可以配置多个 agent 属性，当希望运行指定 agent 进程时，我们需要在命令行中显示的给出该 agent 的名称：
+
+```
+$ bin/flume-ng agent --conf conf --conf-file example.conf --name a1 -Dflume.root.logger=INFO,console
+```
+注意，在实际部署中，我们通常会包含一个选项： --conf-file = <conf-dir>。 <conf-dir> 目录将包含一个 shell 脚本 flume-env.sh 以及一个log4j属性文件。 在这个例子中，我们传递一个 Java 选项来强制 Flume 将日志输出到控制台。
+
+这个例子中，我们可以远程 telnet 访问 44444 端口来向 agent 发送数据：
+```
+$ telnet localhost 44444
+Trying 127.0.0.1...
+Connected to localhost.localdomain (127.0.0.1).
+Escape character is '^]'.
+Hello world! <ENTER>
+OK
+```
+
+agent 进程的控制台将会打印通过 telnet 发送的数据：
+```
+12/06/19 15:32:19 INFO source.NetcatSource: Source starting
+12/06/19 15:32:19 INFO source.NetcatSource: Created serverSocket:sun.nio.ch.ServerSocketChannelImpl[/127.0.0.1:44444]
+12/06/19 15:32:34 INFO sink.LoggerSink: Event: { headers:{} body: 48 65 6C 6C 6F 20 77 6F 72 6C 64 21 0D          Hello world!. }
+```
+
+完成这一步，恭喜你已经成功地配置以及部署一个 flume agent。后续部分将更详细地介绍 agent 配置。
+
+### 配置文件中的环境变量
+
 
 
 

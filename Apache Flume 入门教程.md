@@ -6,8 +6,8 @@ Flume 的使用不只限于日志数据。因为数据源可以定制，flume �
 Apache Flume 是 Apache 基金会的顶级项目，在加入 Apache 之前由 cloudera 开发维护。
 Apache Flume 目前有两种版本： 0.9.x 和 1.x。 其中 0.9.x 的版本我们称之为 Flume OG（original generation）。2011 年 10 月 22 号，cloudera 完成了 Flume-728，对 Flume 进行了里程碑式的改动：重构核心组件、核心配置以及代码架构，重构后的版本统称为 Flume NG（next generation），也就是这里的 1.x 版本。
 
-# 架构
-## 数据流模型
+## 架构
+### 数据流模型
 一个 Flume 时间被定义为一个数据流单元。Flume agent 其实是一个 JVM 进程，该进程中可以包含完成任务所需要的各个组件，比如 Source、Chanel 以及 Slink。
 ![][1]
 
@@ -17,15 +17,15 @@ Apache Flume 目前有两种版本： 0.9.x 和 1.x。 其中 0.9.x 的版本我
 
 **Flume slink** 从 channel 消费完数据就将数据从 channel 中清除，随后将数据放到外部存储系统例如 HDFS （使用 Flume HDFS sink）或发送到其他 Flume agent 的 source 中。不管是 Source 还是 Slink 都是异步发送和消费数据。
 
-## 复杂的流
+### 复杂的流
 Flume 允许用户构建一个复杂的数据流，比如数据流经多个 agent 最终落地。It also allows fan-in and fan-out flows, contextual routing and backup routes (fail-over) for failed hops.
 
-## 可靠性
+### 可靠性
 事件被存储在每个 agent 的 channel 中。随后这些事件会发送到流中的下一个 agent 或者设备存储中（例如 HDFS）。只有事件已经被存储在下一个 agent 的 channel 或设备存储中时，当前 channel 才会清除该事件。这种机制保证了流在端到端的传输中具有可靠性。
 
 Flume使用事务方法（transactional approach）来保证事件的可靠传输。在 source 和 slink 中，事件的存储以及恢复作为事务进行封装，存放事件到 channel 中以及从 channel 中拉取事件均是事务性的。这保证了流中的事件在节点之间传输是可靠的。
 
-## 可恢复
+### 可恢复
 事件在 channel 中进行，该 channel 负责管理事件从故障中恢复。Flume 支持一个由本地文件系统支持的持久化文件（文件模式：channel.type = "file"） channel。同样也只存内存模式（channel.type = "memmory"）,将事件保存在内存队列中。内存模式相对与文件模型性能更好，但是当 agent 进程不幸挂掉时，存储在 channel 中的事件将丢失，无法进行恢复。
 
 # 构建
@@ -103,9 +103,28 @@ agent 进程的控制台将会打印通过 telnet 发送的数据：
 
 完成这一步，恭喜你已经成功地配置以及部署一个 flume agent。后续部分将更详细地介绍 agent 配置。
 
-### 配置文件中的环境变量
+## 数据获取（Data ingestion）
+Flume 支持许多从外部源获取数据的机制。
+### RPC
+一个 Avro client 可以使用 rpc 机制发送指定的文件到 source 中：
+```
+$ bin/flume-ng avro-client -H localhost -p 41414 -F /usr/logs/log.10
+```
+上面的命令会将 /usr/logs/log.10 发送到监听 41414 端口的 source 上。
 
+### 网络流（Network streams）
+Flume 支持从一些流行的日志流中读取数据，例如：
+* Avro
+* Thrift
+* Syslog
+* Netcat
+## 设置多 agent 流（Setting multi-agent flow）
+![][2]
+Flume 支持将多个 agent 串联起来，完成这项操作。
 
+## 合并（Consolidation）
+当需要从众多主机上收集日志信息时，我们可以在每台主机上部署 agent,这些主机的 slink 均连接到最终日志落地主机的 source 上。落地主机将所有数据进行组合，落地到 HDFS 上。
+![][3]
 
 
 
@@ -113,6 +132,5 @@ agent 进程的控制台将会打印通过 telnet 发送的数据：
 
 
 [1]: http://flume.apache.org/_images/UserGuide_image00.png
-
-
-
+[2]: http://flume.apache.org/_images/UserGuide_image03.png
+[3]: http://flume.apache.org/_images/UserGuide_image02.png

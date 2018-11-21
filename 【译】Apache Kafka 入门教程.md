@@ -1,5 +1,5 @@
 # 介绍
-Apache Kafka 是一个分布式数据流平台，这究竟意味着什么呢？
+## Apache Kafka 是一个分布式数据流平台，这究竟意味着什么呢？
 一个数据流平台拥有三个关键能力：
 * 发布和订阅记录流，类似消息队列或者企业消息系统。
 * 以容错的持久方式存储记录流。
@@ -17,13 +17,53 @@ Kafka 主要用于两大类应用：
 * 每条记录包含一个 key，一个 value 以及一个 timestamp
 
 Kafka 有四个核心 API:
-* [Producer API][1] 允许应用程序发布记录流到一个或多个 topic 中
-* [Consumer API][2] 允许应用程序从一个或多个 topic 订阅以及消费数据
+* [Producer API][1] 允许应用程序发布记录流到一个或多个 topic 中。
+* [Consumer API][2] 允许应用程序从一个或多个 topic 订阅以及消费数据。
 * [Streams API][3] 能让应用程序表现地像一个数据流的处理者：从一个或多个 topic 中消费数据；生产数据到一个或多个 topic 中；将输入流有效地转换成输出流。
-* [Connector API][4]
+* [Connector API][4] 允许创建和运行可重复使用的生产者以及消费者，通过将 topic 与已存在的应用程序或者数据系统连接起来。
 
-[1]: http://kafka.apache.org/documentation.html#producerapi
-[2]: http://kafka.apache.org/documentation.html#consumerapi
-[3]: http://kafka.apache.org/documentation/streams
-[4]: http://kafka.apache.org/documentation.html#connect
+## Topics and Logs
+首先，让我来了解下 Kafka Topic。
+Topic 是发布记录的类别或订阅源名称。Kafka 中的 topic 通常拥有众多订阅者。也就是说，一个 topic 可以有 0 个，1 个或者多个消费者来订阅。
+
+对于每一个 topic，kafka 集群包含一个分区的日志，行如下面
+![][5]
+
+每个分区都是一个有序的，不可变的记录序列，不断附加到结构化的提交日志中。分区中的每条记录都有个顺序的 ID 值用于唯一标识这条记录。
+
+使用一个可配置的持久化期限，Kafka 集群会在该期限内一直保存已经发布的记录，无论这些记录是否被消费。例如，你设置保存记录的期限为两天，那么两天之内的记录你可以随意消费，但是两天之前的记录将会被清除。Kafka的性能在数据大小方面实际上是恒定的，因此长时间存储数据不是问题。
+
+![][6]
+事实上，数据保存到文件中，我们需要关心的是每个消费者消费数据的偏移量或者说位置。这个偏移量完全由消费者控制：消费者消费数据，偏移量就会自动增长。事实上，消费者可以根据需要按照自己的意愿来消费数据。例如，消费者可以重置偏移量以满足从更早的数据点开始消费数据，也可以按照默认模式消费最新的数据。
+
+这些功能组合意味着 Kafka 消费者非常灵活且独立 - 它们可以随意重置偏移量而不会对其他消费者造成影响。
+
+将数据进行分区有多个作用：第一，将不同服务置于不同服务器上可以，可以摆脱单机存储的容量限制。第二，也是最重要的作用是提高并行能力，用户可以并行地从多个分区中获取数据。
+
+## 分配
+数据的分区分布在 Kafka 集群的各个服务器上，每个服务器负责处理数据以及接受请求。每个分区都在可配置数量的服务器上进行复制，以实现容错。
+
+每个分区都有一个服务器扮演 leader 的角色，也有 0 个或多个服务器扮演 followers 的角色。leader 处理分区的所有读取和写入操作，followers 则被动地复制 leader 上的分区数据。当 leader 不能正常工作时，followers 中的其中一个会自动称为新的 leader。每个服务器都充当其某些分区的 leader 和其他服务器的 follower，因此负载在群集中得到很好的平衡。
+
+## 地域复制（Geo-Replication）
+Kafka 的 MirrorMaker 为集群提供了 Geo-Replication 的支持。使用 MirrorMaker，数据可以在不同的数据中心之间复制。你可以使用它来主动或者被动地对数据进行备份以及恢复。用户可以通过这种机制，将数据迁移到离用户更近的地方。
+
+## 生产者
+生产者发布数据到指定的 topic 中。生产者可以指定哪些记录发送到 topic 中的哪个分区。你可以循环地给多个分区发布数据以保证各个分区接收的数据量均衡，也可以根据一些条件来选择发布到哪个分区（比如记录中的某些关键字）。
+
+## 消费者
+消费者使用消费者组名称标记自己，发布到主题的每条记录被传递到每个订阅消费者组的消费者实例。消费者实例可以在单独的进程中，也可以在不同的机器上。
+
+如果所有消费者实例具有相同的消费者组，则记录将有效地在消费者实例上进行负载平衡。
+
+如果所有消费者实例具有不同的消费者组，则每个记录将广播到所有消费者进程。
+![][7]
+
+[1]: https://kafka.apache.org/documentation.html#producerapi
+[2]: https://kafka.apache.org/documentation.html#consumerapi
+[3]: https://kafka.apache.org/documentation/streams
+[4]: https://kafka.apache.org/documentation.html#connect
+[5]: https://kafka.apache.org/20/images/log_anatomy.png
+[6]: https://kafka.apache.org/20/images/log_consumer.png
+[7]: https://kafka.apache.org/20/images/consumer-groups.png
 

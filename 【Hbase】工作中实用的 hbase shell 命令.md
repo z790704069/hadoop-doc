@@ -41,6 +41,9 @@ version 命令很好理解，就是查看 hbase 版本了。
 * get
 * delete
 * deleteall
+* create_namespace
+* disable
+* drop
 
 ### list
 列出数据库中所有表
@@ -159,6 +162,23 @@ delete '表名', 'rowkey', '列族:列'
 ### deleteall
 使用“deleteall”命令，可以删除一行中所有单元格
 deleteall '表名', 'rowkey'
+
+### create_namespace
+使用可以创建表的命名空间，命名空间指对一组表进行逻辑分组，类似于关系型数据库中的 database。
+```
+create_namespace namespace
+```
+
+### disable
+禁用表
+```
+disable 'kooola'
+```
+### drop
+删除表，删除表之前需要先进性 disable 操作
+```
+disable 'kooola'
+```
 
 
 [1]: https://www.kooola.com/upload/2019/01/1cvmgaefpaighop6173os397mo.png

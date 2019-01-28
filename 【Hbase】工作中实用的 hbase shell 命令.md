@@ -177,7 +177,7 @@ disable 'kooola'
 ### drop
 删除表，删除表之前需要先进性 disable 操作
 ```
-disable 'kooola'
+drop 'kooola'
 ```
 
 
